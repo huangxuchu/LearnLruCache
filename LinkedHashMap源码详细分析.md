@@ -98,6 +98,140 @@ private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
 ![Image text](./LinkedHashMap_put方法.png)
 
  LinkedHashMap 覆写 newNode 方法（红色背景标注）。在这个方法中，LinkedHashMap 创建了 Entry，并通过 linkNodeLast 方法将 Entry 接在双向链表的尾部，实现了双向链表的建立。双向链表建立之后，我们就可以按照插入顺序去遍历 LinkedHashMap。
+###3.2链表接节点删除
+LinkedHashMap 删除操作相关的代码也是直接用父类的实现。在删除节点时，父类的删除逻辑并不会修复 LinkedHashMap 所维护的双向链表，这不是它的职责。HashMap 中有 afterNodeRemoval(Node<K,V> p)空方法，改方法在删除节点后被调用。LinkedHashMap 覆写该方法，并在该方法中完成了移除被删除节点的操作。相关源码如下：
+```
+// HashMap 中实现
+public V remove(Object key) {
+    Node<K,V> e;
+    return (e = removeNode(hash(key), key, null, false, true)) == null ?
+        null : e.value;
+}
+
+// HashMap 中实现
+final Node<K,V> removeNode(int hash, Object key, Object value,
+                           boolean matchValue, boolean movable) {
+    Node<K,V>[] tab; Node<K,V> p; int n, index;
+    if ((tab = table) != null && (n = tab.length) > 0 &&
+        (p = tab[index = (n - 1) & hash]) != null) {
+        Node<K,V> node = null, e; K k; V v;
+        if (p.hash == hash &&
+            ((k = p.key) == key || (key != null && key.equals(k))))
+            node = p;
+        else if ((e = p.next) != null) {
+            if (p instanceof TreeNode) {...}
+            else {
+                // 遍历单链表，寻找要删除的节点，并赋值给 node 变量
+                do {
+                    if (e.hash == hash &&
+                        ((k = e.key) == key ||
+                         (key != null && key.equals(k)))) {
+                        node = e;
+                        break;
+                    }
+                    p = e;
+                } while ((e = e.next) != null);
+            }
+        }
+        if (node != null && (!matchValue || (v = node.value) == value ||
+                             (value != null && value.equals(v)))) {
+            if (node instanceof TreeNode) {...}
+            // 将要删除的节点从单链表中移除
+            else if (node == p)
+                tab[index] = node.next;
+            else
+                p.next = node.next;
+            ++modCount;
+            --size;
+            afterNodeRemoval(node);    // 调用删除回调方法进行后续操作
+            return node;
+        }
+    }
+    return null;
+}
+
+// LinkedHashMap 中覆写
+void afterNodeRemoval(Node<K,V> e) { // unlink
+    LinkedHashMap.Entry<K,V> p =
+        (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+    // 将 p 节点的前驱后后继引用置空
+    p.before = p.after = null;
+    // b 为 null，表明 p 是头节点
+    if (b == null)
+        head = a;
+    else
+        b.after = a;
+    // a 为 null，表明 p 是尾节点
+    if (a == null)
+        tail = b;
+    else
+        a.before = b;
+}
+```
+整个删除的过程其实就做了三件事：
+1. 根据 hash 定位到桶位置
+2. 遍历链表或调用红黑树相关的删除方法
+3. 从 LinkedHashMap 维护的双链表中移除要删除的节点
+                                                            
+假设我们要删除k=4的节点：
+![Image text](./准备删除k=4.png)
+
+根据 hash 定位到该节点table[2]，然后在对table[2]保存的单链表进行遍历。找到要删除的节点(k=4)，先从单链表中移除该节点。如下：
+![Image text](./hashmap删除k4.png)
+
+然后再双向链表中移除该节点：
+![Image text](./linkedhashmap删除k4.png)
+
+###3.3 访问顺序的维护过程
+```
+// LinkedHashMap 中覆写
+public V get(Object key) {
+    Node<K,V> e;
+    if ((e = getNode(hash(key), key)) == null)
+        return null;
+    // 如果 accessOrder 为 true，则调用 afterNodeAccess 将被访问节点移动到链表最后
+    if (accessOrder)
+        afterNodeAccess(e);
+    return e.value;
+}
+
+// LinkedHashMap 中覆写
+void afterNodeAccess(Node<K,V> e) { // move node to last
+    LinkedHashMap.Entry<K,V> last;
+    if (accessOrder && (last = tail) != e) {
+        LinkedHashMap.Entry<K,V> p =
+            (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+        p.after = null;
+        // 如果 b 为 null，表明 p 为头节点
+        if (b == null)
+            head = a;
+        else
+            b.after = a;
+            
+        if (a != null)
+            a.before = b;
+        else
+            last = b;
+    
+        if (last == null)
+            head = p;
+        else {
+            // 将 p 接在链表的最后
+            p.before = last;
+            last.after = p;
+        }
+        tail = p;
+        ++modCount;
+    }
+}
+```
+上面就是访问顺序的实现代码，假设我们访问下图键值为K=4的节点，访问前结构为：
+![Image text](./访问k4.png)
+
+访问后，K=4的节点将会被移动到双向链表的最后位置，其before和after也会跟着更新。访问后的结构如下：
+![Image text](./移动k4.png)
+
 #### 参考文档
+* [HashMap 源码详细分析(JDK1.8)](http://www.tianxiaobo.com/2018/01/18/HashMap-%E6%BA%90%E7%A0%81%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90-JDK1-8/)
 * [LinkedHashMap 源码详细分析（JDK1.8）](http://www.tianxiaobo.com/2018/01/24/LinkedHashMap-%E6%BA%90%E7%A0%81%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90%EF%BC%88JDK1-8%EF%BC%89/)
 
