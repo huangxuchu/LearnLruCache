@@ -183,6 +183,8 @@ void afterNodeRemoval(Node<K,V> e) { // unlink
 ![Image text](./linkedhashmap删除k4.png)
 
 ###3.3 访问顺序的维护过程
+默认情况下，LinkedHashMap 是按插入顺序维护链表。不过我们可以在初始化 LinkedHashMap，指定 accessOrder 参数为 true，即可让它按访问顺序维护链表。当我们调用get/getOrDefault/replace等方法时，便会将这些方法访问的节点移动到链表的尾部。相应的源码如下：
+
 ```
 // LinkedHashMap 中覆写
 public V get(Object key) {
