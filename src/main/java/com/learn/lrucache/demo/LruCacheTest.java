@@ -2,6 +2,7 @@ package com.learn.lrucache.demo;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**
@@ -14,6 +15,9 @@ import java.util.LinkedHashMap;
  */
 public class LruCacheTest {
     public static void main(String[] args) {
+        stepHashMap();
+        printLine();
+
         stepLinkedHashMap(false);
         printLine();
         stepLinkedHashMap(true);
@@ -24,6 +28,22 @@ public class LruCacheTest {
 
         step2WithLruCache();
         printLine();
+    }
+
+    private static void stepHashMap() {
+        HashMap<Integer, String> map = new HashMap(16);
+        map.put(7, "这个是7");
+        map.put(11, "这个是11");
+        map.put(43, "这个是43");
+        map.put(59, "这个是59");
+        map.put(19, "这个是19");
+        map.put(3, "这个是3");
+        map.put(35, "这个是35");
+
+        System.out.println("遍历结果：");
+        for (Integer key : map.keySet()) {
+            System.out.print(key + " -> ");
+        }
     }
 
     /**
