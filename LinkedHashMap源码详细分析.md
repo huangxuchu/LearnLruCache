@@ -6,10 +6,10 @@ LinkedHashMap 继承自 HashMap，在 HashMap 基础上，通过维护一条双�
 
 ##2.原理
 LinkedHashMap 继承自 HashMap，所以它的底层仍然是基于拉链式散列结构。该结构由数组和链表或红黑树组成，结构示意图大致如下：
-![Image text](./HashMap结构.png)
+![Image text](./1.png)
 
 LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。其结构可能如下图：
-![Image text](./LinkedHashMap结构.png)
+![Image text](./2.png)
 
 上图中，淡蓝色的箭头表示前驱引用，红色箭头表示后继引用。每当有新键值对节点插入，新节点最终会接在 tail 引用指向的节点后面。而 tail 引用则会移动到新的节点上，这样一个双向链表就建立起来了。
 
@@ -173,14 +173,14 @@ void afterNodeRemoval(Node<K,V> e) { // unlink
 2. 遍历链表或调用红黑树相关的删除方法
 3. 从 LinkedHashMap 维护的双链表中移除要删除的节点
                                                             
-假设我们要删除k=4的节点：
-![Image text](./准备删除k=4.png)
+假设我们要删除k=3的节点：
+![Image text](./3.png)
 
-根据 hash 定位到该节点table[2]，然后在对table[2]保存的单链表进行遍历。找到要删除的节点(k=4)，先从单链表中移除该节点。如下：
-![Image text](./hashmap删除k4.png)
+根据 hash 定位到该节点table[2]，然后在对table[2]保存的单链表进行遍历。找到要删除的节点(k=3)，先从单链表中移除该节点。如下：
+![Image text](./4.png)
 
 然后再双向链表中移除该节点：
-![Image text](./linkedhashmap删除k4.png)
+![Image text](./5.png)
 
 ###3.3 访问顺序的维护过程
 默认情况下，LinkedHashMap 是按插入顺序维护链表。不过我们可以在初始化 LinkedHashMap，指定 accessOrder 参数为 true，即可让它按访问顺序维护链表。当我们调用get/getOrDefault/replace等方法时，便会将这些方法访问的节点移动到链表的尾部。相应的源码如下：
@@ -227,11 +227,11 @@ void afterNodeAccess(Node<K,V> e) { // move node to last
     }
 }
 ```
-上面就是访问顺序的实现代码，假设我们访问下图键值为K=4的节点，访问前结构为：
-![Image text](./访问k4.png)
+上面就是访问顺序的实现代码，假设我们访问下图键值为k=3的节点，访问前结构为：
+![Image text](./6.png)
 
-访问后，K=4的节点将会被移动到双向链表的最后位置，其before和after也会跟着更新。访问后的结构如下：
-![Image text](./移动k4.png)
+访问后，k=3的节点将会被移动到双向链表的最后位置，其before和after也会跟着更新。访问后的结构如下：
+![Image text](./7.png)
 
 #### 参考文档
 * [HashMap 源码详细分析(JDK1.8)](http://www.tianxiaobo.com/2018/01/18/HashMap-%E6%BA%90%E7%A0%81%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90-JDK1-8/)
