@@ -101,7 +101,7 @@ public class LruCacheTest {
     }
 
     public static void printLine() {
-        System.out.println("-----------------------------------------------\n");
+        System.out.println("\n-----------------------------------------------\n");
     }
 
     public static class MLruCache extends LruCache<String, String> {
