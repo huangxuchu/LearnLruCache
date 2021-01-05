@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.learn.lrucache</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>lrucache</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo</name>
+    <name>LruCache</name>
     <description>学习LruCache（最近最少使用算法）</description>
 
     <properties>

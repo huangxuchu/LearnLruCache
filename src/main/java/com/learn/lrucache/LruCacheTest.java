@@ -1,4 +1,4 @@
-package com.learn.lrucache.demo;
+package com.learn.lrucache;
 
 import com.alibaba.fastjson.JSON;
 
