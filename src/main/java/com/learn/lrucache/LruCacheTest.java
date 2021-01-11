@@ -15,10 +15,10 @@ import java.util.LinkedHashMap;
  */
 public class LruCacheTest {
     public static void main(String[] args) {
-        stepHashMap();
+        setHashLruCache();
         printLine();
 
-        stepLinkedHashMap(false);
+        /*stepLinkedHashMap(false);
         printLine();
         stepLinkedHashMap(true);
         printLine();
@@ -27,7 +27,16 @@ public class LruCacheTest {
         printLine();
 
         step2WithLruCache();
-        printLine();
+        printLine();*/
+    }
+
+    private static void setHashLruCache() {
+        HashLruCache<Integer, String> map = new HashLruCache<>(2,16);
+        for (int i = 0; i < 47; i++) {
+            map.put( i, "这个是" + i);
+        }
+        System.out.println("遍历结果：" + map.toString());
+
     }
 
     private static void stepHashMap() {

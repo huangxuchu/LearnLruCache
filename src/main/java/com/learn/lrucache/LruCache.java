@@ -1,4 +1,5 @@
-package com.learn.lrucache;/*
+package com.learn.lrucache;
+/*
  * Copyright 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -130,7 +131,7 @@ public class LruCache<K, V> {
      * @return the previous value mapped by {@code key}.
      */
     @Nullable
-    public final V put(@NonNull K key, @NonNull V value) {
+    public V put(@NonNull K key, @NonNull V value) {
         if (key == null || value == null) {
             throw new NullPointerException("key == null || value == null");
         }
@@ -206,7 +207,7 @@ public class LruCache<K, V> {
      * be created.
      */
     @Nullable
-    public final V get(@NonNull K key) {
+    public V get(@NonNull K key) {
         if (key == null) {
             throw new NullPointerException("key == null");
         }
@@ -278,7 +279,7 @@ public class LruCache<K, V> {
      * @return the previous value mapped by {@code key}.
      */
     @Nullable
-    public final V remove(@NonNull K key) {
+    public V remove(@NonNull K key) {
         if (key == null) {
             throw new NullPointerException("key == null");
         }
@@ -427,10 +428,16 @@ public class LruCache<K, V> {
     }
 
     @Override
-    public synchronized final String toString() {
+    public synchronized String toString() {
+        return JSON.toJSONString(map);
+    }
+
+
+    /*@Override
+    public synchronized String toString() {
         int accesses = hitCount + missCount;
         int hitPercent = accesses != 0 ? (100 * hitCount / accesses) : 0;
         return String.format(Locale.US, "LruCache[maxSize=%d,hits=%d,misses=%d,hitRate=%d%%]; Data=%s",
                 maxSize, hitCount, missCount, hitPercent, JSON.toJSONString(map));
-    }
+    }*/
 }
