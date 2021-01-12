@@ -36,7 +36,6 @@ public class LruCacheTest {
             map.put( i, "这个是" + i);
         }
         System.out.println("遍历结果：" + map.toString());
-
     }
 
     private static void stepHashMap() {
