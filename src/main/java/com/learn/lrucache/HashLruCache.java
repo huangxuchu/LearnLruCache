@@ -63,8 +63,8 @@ public class HashLruCache<K, V> {
 
         putCount++;
 
-        Entity<K, V> entity = new Entity<>(hash, key, value, System.currentTimeMillis() + overTime);
         p.setUpdateTime(System.currentTimeMillis());
+        Entity<K, V> entity = new Entity<>(hash, key, value, System.currentTimeMillis() + overTime);
         Entity<K, V> last = p.put(key, entity);
 
         return last == null ? null : last.value;
@@ -97,6 +97,29 @@ public class HashLruCache<K, V> {
             } else {
                 return last.getValue();
             }
+        } else {
+            return null;
+        }
+    }
+
+    public final V remove(K key) {
+        int hash = hash(key);
+        int n = table.length;
+        int i;
+
+        Node<K, Entity<K, V>> p;
+        Node<K, Entity<K, V>>[] tab = table;
+
+        if ((p = tab[i = (n - 1) & hash]) == null) {
+            return null;
+        }
+
+        Entity<K, V> last = p.remove(key);
+        if (last != null) {
+            // 修改节点的更新时间
+            p.setUpdateTime(System.currentTimeMillis());
+
+            return last.getValue();
         } else {
             return null;
         }
