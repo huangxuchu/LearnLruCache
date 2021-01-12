@@ -1,6 +1,8 @@
 package com.learn.lrucache;
 
 import com.alibaba.fastjson.JSON;
+import com.learn.lrucache.bean.HashLruCache;
+import com.learn.lrucache.bean.LruCache;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,7 +15,7 @@ import java.util.LinkedHashMap;
  * @Modify:
  * @Description:
  */
-public class LruCacheTest {
+public class LruCacheMain {
     public static void main(String[] args) {
         setHashLruCache();
         printLine();

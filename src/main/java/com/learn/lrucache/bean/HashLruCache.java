@@ -1,8 +1,6 @@
-package com.learn.lrucache;
+package com.learn.lrucache.bean;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * @author Huangxuchu
@@ -30,6 +28,10 @@ public class HashLruCache<K, V> {
         this(maxSize, DEFAULT_TABLE_SIZE);
     }
 
+    /**
+     * @param maxSize   分片的最大存储数量
+     * @param tableSize 分片数量
+     */
     public HashLruCache(int maxSize, int tableSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSize <= 0");

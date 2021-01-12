@@ -1,4 +1,4 @@
-package com.learn.lrucache;
+package com.learn.lrucache.bean;
 /*
  * Copyright 2018 The Android Open Source Project
  *
